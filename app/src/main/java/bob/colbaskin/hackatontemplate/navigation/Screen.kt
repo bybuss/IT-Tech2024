@@ -24,4 +24,10 @@ sealed class AuthScreen(val route: String) {
 sealed class DetailsScreen(val route: String) {
     object Home: DetailsScreen("home_details")
     object Profile: DetailsScreen("profile_details")
+    object AssetSelection : DetailsScreen("asset_selection/{assetType}") {
+        fun createRoute(assetType: String) = "asset_selection/$assetType"
+    }
+    object AssetStatistics : DetailsScreen("asset_statistics/{assetType}") {
+        fun createRoute(assetType: String) = "asset_statistics/$assetType"
+    }
 }

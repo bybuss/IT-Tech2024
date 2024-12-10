@@ -1,5 +1,6 @@
 package bob.colbaskin.hackatontemplate.di
 
+import android.util.Log
 import bob.colbaskin.hackatontemplate.BuildConfig
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -34,7 +35,8 @@ object RemoteModule {
         return OkHttpClient.Builder()
             .addInterceptor(Interceptor { chain ->
                 // FIXME: val token = runBlocking { dataStoreRepository.getToken().first() }
-                // FIXME: Log.d("AuthViewModel", "token used in provideOkHttpClient: $token")
+                // FIXME: Log.d("AuthViewModel", "token used in provideOkHttpClient: $token")\
+                Log.d("Auth", "deviceFingerprint: $deviceFingerprint")
                 val request = chain.request().newBuilder()
                     // FIXME: .addHeader("Authorization", token)
                     .addHeader("fingerprint", deviceFingerprint)
