@@ -35,7 +35,9 @@ fun WelcomeScreen(
     val pages = listOf(
         OnBoardingPage.First,
         OnBoardingPage.Second,
-        OnBoardingPage.Third
+        OnBoardingPage.Third,
+        OnBoardingPage.Four,
+        OnBoardingPage.Five
     )
     val pagerState = rememberPagerState()
 

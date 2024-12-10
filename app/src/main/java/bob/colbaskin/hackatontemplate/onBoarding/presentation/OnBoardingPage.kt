@@ -17,4 +17,12 @@ sealed class OnBoardingPage(
     object Third : OnBoardingPage(
         image = R.drawable.third,
     )
+
+    object Four : OnBoardingPage(
+        image = R.drawable.four,
+    )
+
+    object Five : OnBoardingPage(
+        image = R.drawable.five,
+    )
 }

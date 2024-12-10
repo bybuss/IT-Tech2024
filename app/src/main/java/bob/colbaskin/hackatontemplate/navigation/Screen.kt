@@ -1,6 +1,7 @@
 package bob.colbaskin.hackatontemplate.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoGraph
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -11,6 +12,7 @@ sealed class Screen (
     val icon: ImageVector
 ) {
     object Home: Screen("home", "Главная", Icons.Default.Home)
+    object Analytics: Screen("analytics", "Аналитика", Icons.Default.AutoGraph)
     object Profile: Screen("profile", "Профиль", Icons.Default.Person)
     object Welcome: DetailsScreen("welcome")
 }

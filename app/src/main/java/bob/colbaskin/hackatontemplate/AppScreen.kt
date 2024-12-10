@@ -3,6 +3,7 @@ package bob.colbaskin.hackatontemplate
 import android.annotation.SuppressLint
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import bob.colbaskin.hackatontemplate.navigation.BottomNavBar
@@ -16,4 +17,10 @@ fun AppScreen(navController: NavHostController = rememberNavController()) {
     ) {
         MainNavGraph(navController = navController)
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun AppPreview() {
+    AppScreen()
 }

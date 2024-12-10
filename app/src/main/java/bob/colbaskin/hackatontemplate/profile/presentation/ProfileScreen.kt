@@ -1,11 +1,13 @@
 package bob.colbaskin.hackatontemplate.profile.presentation
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,8 +16,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Output
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -25,22 +33,29 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import bob.colbaskin.hackatontemplate.profile.domain.models.SimpleStrategy
+import java.util.UUID
 
 @Composable
 fun ProfileScreen(
     onDetailedClick: () -> Unit
 ) {
     val viewModel: ProfileViewModel = hiltViewModel()
-    val selectedTab by viewModel.selectedTab.collectAsState()
+    val strategies: List<SimpleStrategy> by viewModel.strategies.collectAsState()
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(
+            color = MaterialTheme.colorScheme.background
+        )
     ) {
         Box(
             modifier = Modifier
@@ -53,47 +68,114 @@ fun ProfileScreen(
                 onAccountExitClick = { viewModel.accountExit() }
             )
         }
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
         ) {
             Column {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    ProfileTabButton(
-                        "Активность",
-                        selectedTab == ProfileTab.Activity
-                    ) { viewModel.updateSelectedTab(ProfileTab.Activity) }
-
-                    ProfileTabButton(
-                        "Инвентарь",
-                        selectedTab == ProfileTab.Inventory
-                    ) { viewModel.updateSelectedTab(ProfileTab.Inventory) }
-
-                    ProfileTabButton(
-                        "Достижения",
-                        selectedTab == ProfileTab.Achievements
-                    ) { viewModel.updateSelectedTab(ProfileTab.Achievements) }
-                }
                 HorizontalDivider(
                     modifier = Modifier.fillMaxWidth(),
                     thickness = 1.dp,
                     color = Color.Black
                 )
-
                 Box(modifier = Modifier.fillMaxSize()) {
-                    when (selectedTab) {
-                        ProfileTab.Activity -> ActivityContent()
-                        ProfileTab.Inventory -> InventoryContent()
-                        ProfileTab.Achievements -> AchievementsContent()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                    ) {
+                        LazyColumn(
+                            contentPadding = PaddingValues(16.dp)
+                        ) {
+                            items(strategies) { strategy ->
+                                HistoryCard(
+                                    id = strategy.id,
+                                    startDate = strategy.startDate,
+                                    endDate = strategy.endDate,
+                                    sum = strategy.sum
+                                )
+                            }
+                        }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun HistoryCard(
+    id: UUID,
+    startDate: String,
+    endDate: String,
+    sum: Int
+) {
+    val clipboardManager = LocalClipboardManager.current
+    val context = LocalContext.current
+
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.DarkGray),
+        shape = RoundedCornerShape(8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = id.toString().take(25) + "...",
+                    fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                    color = MaterialTheme.colorScheme.surface,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                )
+
+                Spacer(modifier = Modifier.weight(0.1f))
+
+                Icon(
+                    imageVector = Icons.Filled.ContentCopy,
+                    contentDescription = "Скопировать",
+                    tint = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier
+                        .size(16.dp)
+                        .clickable {
+                            clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(id.toString()))
+                            Toast.makeText(context, "ID скопирован: $id", Toast.LENGTH_SHORT).show()
+                        }
+                )
+
+                Spacer(modifier = Modifier.weight(0.9f))
+
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Перейти",
+                    tint = MaterialTheme.colorScheme.surface,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Дата: с $startDate по $endDate",
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                color = MaterialTheme.colorScheme.surface
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Сумма вложений: $sum ₽",
+                fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                color = MaterialTheme.colorScheme.surface,
+            )
         }
     }
 }
@@ -137,77 +219,20 @@ fun ProfileHeader(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Иванчик Зольчик",
+                text = "test@gmail.com",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable { onDetailedClick() }
-            )
-            Text(
-                text = "г. Ростов-на-Дону.",
-                color = Color.Gray,
-                fontSize = 14.sp,
-                modifier = Modifier.clickable { onDetailedClick() }
+                modifier = Modifier.clickable { onDetailedClick() },
+                color = MaterialTheme.colorScheme.scrim
             )
         }
-    }
-}
-
-@Composable
-fun ProfileTabButton(title: String, selected: Boolean, onClick: () -> Unit) {
-    Text(
-        text = title,
-        color = if (selected) Color.Black else Color.Gray,
-        fontSize = 16.sp,
-        fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-        modifier = Modifier
-            .clickable(onClick = onClick)
-            .padding(8.dp)
-    )
-}
-
-@Composable
-fun ActivityContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "ActivityContent",
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-fun InventoryContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "InventoryContent",
-            textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-fun AchievementsContent() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "AchievementsContent",
-            textAlign = TextAlign.Center
-        )
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun ProfileScreenPreview() {
-    ProfileScreen({})
+    ProfileScreen {}
 }
 
 @Preview(showBackground = true)
@@ -218,34 +243,11 @@ fun ProfileHeaderPreview() {
 
 @Preview(showBackground = true)
 @Composable
-fun ActivityTabButtonPreview() {
-    ProfileTabButton("Активность", true, {})
-}
-@Preview(showBackground = true)
-@Composable
-fun InventoryTabButtonPreview() {
-    ProfileTabButton("Инвентарь", true, {})
-}
-@Preview(showBackground = true)
-@Composable
-fun AchievementsTabButtonPreview() {
-    ProfileTabButton("Достижения", true, {})
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ActivityContentPreview() {
-    ActivityContent()
-}
-
-@Preview(showBackground = true)
-@Composable
-fun InventoryContentPreview() {
-    InventoryContent()
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AchievementsContentPreview() {
-    AchievementsContent()
+fun HistoryCardPreview() {
+    HistoryCard(
+        id = UUID.randomUUID(),
+        startDate = "01.01.2000",
+        endDate = "01.01.2001",
+        sum = 2000000
+    )
 }
