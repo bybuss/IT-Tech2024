@@ -15,8 +15,8 @@ android {
         applicationId = "bob.colbaskin.hackatontemplate"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -134,4 +134,7 @@ dependencies {
     //Location
     implementation(libs.play.services.location)
     implementation(libs.accompanist.permissions)
+
+    //Diagrams
+    implementation(libs.vico.compose)
 }
