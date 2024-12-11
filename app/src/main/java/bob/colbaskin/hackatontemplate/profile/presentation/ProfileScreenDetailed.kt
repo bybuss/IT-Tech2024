@@ -13,12 +13,15 @@ import bob.colbaskin.hackatontemplate.navigation.TopNavBar
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ProfileScreenDetailed(onClick: () -> Unit) {
+fun ProfileScreenDetailed(
+    id: String,
+    onClick: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopNavBar(
                 onClick = { onClick() },
-                title = "Detailed Profile Screen"
+                title = id
             )
         }
     ) {

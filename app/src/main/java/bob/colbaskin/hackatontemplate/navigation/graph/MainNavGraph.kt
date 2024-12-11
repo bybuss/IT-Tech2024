@@ -5,8 +5,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import bob.colbaskin.hackatontemplate.analytics.presentation.AnalyticsScreen
-import bob.colbaskin.hackatontemplate.analytics.presentation.AssetSelectionScreen
-import bob.colbaskin.hackatontemplate.analytics.presentation.AssetStatisticsScreen
 import bob.colbaskin.hackatontemplate.home.presentation.HomeScreen
 import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 import bob.colbaskin.hackatontemplate.navigation.Screen
@@ -22,7 +20,9 @@ fun MainNavGraph(navController: NavHostController) {
     ) {
         composable(route = Screen.Home.route,) {
             HomeScreen(
-                onClick = { navController.navigate(DetailsScreen.Home.route) }
+                onDetailedClick = { id ->
+                    navController.navigate(DetailsScreen.Home.createRoute(id))
+                }
             )
         }
         composable(route = Screen.Analytics.route) {
@@ -34,7 +34,9 @@ fun MainNavGraph(navController: NavHostController) {
         }
         composable(route = Screen.Profile.route) {
             ProfileScreen(
-                onDetailedClick = { navController.navigate(DetailsScreen.Profile.route) },
+                onDetailedClick = { id ->
+                    navController.navigate(DetailsScreen.Profile.createRoute(id))
+                },
             )
         }
 

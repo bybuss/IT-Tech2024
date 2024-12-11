@@ -2,12 +2,18 @@ package bob.colbaskin.hackatontemplate.di
 
 import android.util.Log
 import bob.colbaskin.hackatontemplate.BuildConfig
+import bob.colbaskin.hackatontemplate.auth.domain.local.AuthDataStoreRepository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
+import okhttp3.Cookie
+import okhttp3.CookieJar
+import okhttp3.HttpUrl
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -28,21 +34,42 @@ object RemoteModule {
 
     @Provides
     @Singleton
+    @Named("accessToken")
+    fun provideAccessToken(authDataStoreRepository: AuthDataStoreRepository): String {
+        return runBlocking {
+            authDataStoreRepository.getToken().first().toString()
+        }
+    }
+
+    @Provides
+    @Singleton
     fun provideOkHttpClient(
-        //TODO: Добавить датастор с токеном для передачи в хедер
-        @Named("deviceFingerprint") deviceFingerprint: String
+        authDataStoreRepository: AuthDataStoreRepository,
+        @Named("deviceFingerprint") deviceFingerprint: String,
+        @Named("accessToken") token: String
     ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(Interceptor { chain ->
-                // FIXME: val token = runBlocking { dataStoreRepository.getToken().first() }
-                // FIXME: Log.d("AuthViewModel", "token used in provideOkHttpClient: $token")\
+                val token2 = runBlocking { authDataStoreRepository.getToken().first() } ?: token
+                Log.d("AuthViewModel", "token used in provideOkHttpClient: $token and $token2")
                 Log.d("Auth", "deviceFingerprint: $deviceFingerprint")
+
+                val cookie = Cookie.Builder()
+                    .domain("menoitami.ru")
+                    .name("access_token")
+                    .value(token2)
+                    .build()
+
                 val request = chain.request().newBuilder()
-                    // FIXME: .addHeader("Authorization", token)
                     .addHeader("fingerprint", deviceFingerprint)
                     .build()
+
+                val cookieJar = PersistentCookieJar()
+                cookieJar.saveFromResponse(chain.request().url, listOf(cookie))
+
                 chain.proceed(request)
             })
+            .cookieJar(PersistentCookieJar())
             .build()
     }
 
@@ -57,5 +84,18 @@ object RemoteModule {
             .baseUrl(apiUrl)
             .client(okHttpClient)
             .build()
+    }
+}
+
+class PersistentCookieJar : CookieJar {
+
+    private val cookies = mutableListOf<Cookie>()
+
+    override fun loadForRequest(url: HttpUrl): List<Cookie> {
+        return cookies.filter { it.matches(url) }
+    }
+
+    override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+        this.cookies.addAll(cookies)
     }
 }

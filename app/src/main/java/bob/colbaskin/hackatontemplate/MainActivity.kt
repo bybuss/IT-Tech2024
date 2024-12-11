@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import bob.colbaskin.hackatontemplate.analytics.data.workManager.WorkManagerHelper
 import bob.colbaskin.hackatontemplate.navigation.graph.RootNavGraph
 import bob.colbaskin.hackatontemplate.onBoarding.presentation.OnBoardViewModel
 import bob.colbaskin.hackatontemplate.ui.theme.HackatonTemplateTheme
@@ -18,6 +19,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        WorkManagerHelper().scheduleDailyFetchWork(applicationContext)
 
         enableEdgeToEdge()
 

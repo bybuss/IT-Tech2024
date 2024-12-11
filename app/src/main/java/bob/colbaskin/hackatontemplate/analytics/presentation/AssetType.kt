@@ -14,7 +14,7 @@ sealed class AssetType(val displayName: String, val icon: Int) {
                 "shares" -> Shares
                 "gold" -> Gold
                 "currencies" -> Currencies
-                "bonds" -> Bonds
+                "bounds" -> Bonds
                 else -> throw IllegalArgumentException("Unknown asset type: $type")
             }
         }

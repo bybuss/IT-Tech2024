@@ -31,7 +31,7 @@ class AuthDataStoreRepositoryImpl @Inject constructor(
     override suspend fun saveToken(token: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKey.token] = token
-            Log.d("Auth", "token saved: $token")
+            Log.d("Auth", "token saved in datastore: $token")
         }
     }
 

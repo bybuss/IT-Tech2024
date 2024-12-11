@@ -1,31 +1,19 @@
-package bob.colbaskin.hackatontemplate.profile.presentation
+package bob.colbaskin.hackatontemplate.home.presentation
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import bob.colbaskin.hackatontemplate.auth.domain.local.AuthDataStoreRepository
 import bob.colbaskin.hackatontemplate.profile.domain.models.SimpleStrategy
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import java.util.UUID
-
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(
-    private val authDataStoreRepository: AuthDataStoreRepository
-): ViewModel() {
-
+class HomeViewModel @Inject constructor(): ViewModel(){
     private val _strategies = MutableStateFlow<List<SimpleStrategy>>(emptyList())
     val strategies = _strategies.asStateFlow()
 
     init {
-        getTasks()
-        getInventory()
-        loadAchievements()
         setStrategies()
     }
 
@@ -62,24 +50,5 @@ class ProfileViewModel @Inject constructor(
                 sum = 2000000
             ),
         )
-    }
-
-    fun accountExit() {
-        viewModelScope.launch{
-            authDataStoreRepository.clearToken()
-            Log.d("Profile", "accountExit -> token cleared")
-        }
-    }
-
-    fun getTasks() {
-        Log.d("ProfileViewModel", "getTasks")
-    }
-
-    fun getInventory() {
-        Log.d("ProfileViewModel", "getInventory")
-    }
-
-    fun loadAchievements() {
-       Log.d("ProfileViewModel", "loadAchievements")
     }
 }

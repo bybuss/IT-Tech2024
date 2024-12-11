@@ -1,4 +1,4 @@
-package bob.colbaskin.hackatontemplate.analytics.presentation
+package bob.colbaskin.hackatontemplate.analytics.presentation.select
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -34,41 +34,38 @@ fun AssetSelectionScreen(
 ) {
     val assetData by viewModel.assetData.collectAsState()
 
-    // Загружаем активы для текущего экрана
     val assets = when (assetType) {
-        "bonds" -> assetData?.bonds?.map { it.name } ?: emptyList()
+        "bounds" -> assetData?.bounds?.map { it.name } ?: emptyList()
         "currencies" -> assetData?.currencies?.map { it.name } ?: emptyList()
         "gold" -> assetData?.gold?.map { it.date } ?: emptyList()
         "shares" -> assetData?.shares?.map { it.name } ?: emptyList()
         else -> emptyList()
     }
 
-    // Логика для определения предыдущего и следующего экранов
     val previousScreen = when (assetType) {
-        "bonds" -> "currencies"
+        "bounds" -> "currencies"
         "currencies" -> "gold"
         "gold" -> "shares"
-        "shares" -> "bonds"
+        "shares" -> "bounds"
         else -> null
     }
 
     val nextScreen = when (assetType) {
-        "bonds" -> "shares"
-        "currencies" -> "bonds"
+        "bounds" -> "shares"
+        "currencies" -> "bounds"
         "gold" -> "currencies"
         "shares" -> "gold"
         else -> null
     }
 
     Column {
-        // Хедер с названием экрана и стрелками навигации
+
         AssetSelectionHeader(
             assetType = assetType,
             onPrevious = { previousScreen?.let { onAssetSelected(it) } },
             onNext = { nextScreen?.let { onAssetSelected(it) } }
         )
 
-        // Список активов
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -110,7 +107,7 @@ fun AssetSelectionHeader(
                 "shares" -> "Акции"
                 "gold" -> "Золото"
                 "currencies" -> "Валюта"
-                "bonds" -> "Облигации"
+                "bounds" -> "Облигации"
                 else -> "Неизвестный экран"
             },
             style = MaterialTheme.typography.titleLarge,
@@ -155,7 +152,7 @@ fun AssetItemPreview() {
 @Composable
 fun AssetSelectionHeaderPreview() {
     AssetSelectionHeader(
-        assetType = "bonds",
+        assetType = "bounds",
         onPrevious = {},
         onNext = {},
     )
@@ -165,7 +162,7 @@ fun AssetSelectionHeaderPreview() {
 @Composable
 fun AssetSelectionScreenPreview() {
     AssetSelectionScreen(
-        assetType = "bonds",
+        assetType = "bounds",
         onStatisticClicked = {},
         onAssetSelected = {}
     )

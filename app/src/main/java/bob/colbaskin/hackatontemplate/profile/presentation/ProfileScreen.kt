@@ -36,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,7 +48,7 @@ import java.util.UUID
 
 @Composable
 fun ProfileScreen(
-    onDetailedClick: () -> Unit
+    onDetailedClick: (String) -> Unit
 ) {
     val viewModel: ProfileViewModel = hiltViewModel()
     val strategies: List<SimpleStrategy> by viewModel.strategies.collectAsState()
@@ -64,7 +65,6 @@ fun ProfileScreen(
             contentAlignment = Alignment.Center
         ) {
             ProfileHeader(
-                onDetailedClick = onDetailedClick,
                 onAccountExitClick = { viewModel.accountExit() }
             )
         }
@@ -92,7 +92,10 @@ fun ProfileScreen(
                                     id = strategy.id,
                                     startDate = strategy.startDate,
                                     endDate = strategy.endDate,
-                                    sum = strategy.sum
+                                    sum = strategy.sum,
+                                    onDetailedClick = { id ->
+                                        onDetailedClick(id)
+                                    }
                                 )
                             }
                         }
@@ -108,7 +111,8 @@ fun HistoryCard(
     id: UUID,
     startDate: String,
     endDate: String,
-    sum: Int
+    sum: Int,
+    onDetailedClick: (String) -> Unit
 ) {
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
@@ -150,7 +154,7 @@ fun HistoryCard(
                     modifier = Modifier
                         .size(16.dp)
                         .clickable {
-                            clipboardManager.setText(androidx.compose.ui.text.AnnotatedString(id.toString()))
+                            clipboardManager.setText(AnnotatedString(id.toString()))
                             Toast.makeText(context, "ID скопирован: $id", Toast.LENGTH_SHORT).show()
                         }
                 )
@@ -161,7 +165,9 @@ fun HistoryCard(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "Перейти",
                     tint = MaterialTheme.colorScheme.surface,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp).clickable {
+                        onDetailedClick(id.toString())
+                    }
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -182,7 +188,6 @@ fun HistoryCard(
 
 @Composable
 fun ProfileHeader(
-    onDetailedClick: () -> Unit,
     onAccountExitClick: () -> Unit
 ) {
     Box(
@@ -222,7 +227,6 @@ fun ProfileHeader(
                 text = "test@gmail.com",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable { onDetailedClick() },
                 color = MaterialTheme.colorScheme.scrim
             )
         }
@@ -238,7 +242,7 @@ fun ProfileScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun ProfileHeaderPreview() {
-    ProfileHeader({}, {})
+    ProfileHeader({})
 }
 
 @Preview(showBackground = true)
@@ -248,6 +252,7 @@ fun HistoryCardPreview() {
         id = UUID.randomUUID(),
         startDate = "01.01.2000",
         endDate = "01.01.2001",
-        sum = 2000000
+        sum = 2000000,
+        onDetailedClick = {}
     )
 }

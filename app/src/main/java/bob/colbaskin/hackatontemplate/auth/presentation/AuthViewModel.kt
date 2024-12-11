@@ -111,6 +111,7 @@ class AuthViewModel @Inject constructor(
     }
 
     fun codeToToken(code: String) {
+        Log.d("Auth", "try CodeToToken in AuthViewModel: $code")
         viewModelScope.launch {
             try {
                 authRepository.codeToToken(

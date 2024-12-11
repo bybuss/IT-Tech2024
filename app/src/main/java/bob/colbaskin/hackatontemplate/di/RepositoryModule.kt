@@ -1,6 +1,9 @@
 package bob.colbaskin.hackatontemplate.di
 
 import android.content.Context
+import bob.colbaskin.hackatontemplate.analytics.data.AnalyticRepositoryImpl
+import bob.colbaskin.hackatontemplate.analytics.domain.AnalyticApiService
+import bob.colbaskin.hackatontemplate.analytics.domain.AnalyticRepository
 import bob.colbaskin.hackatontemplate.auth.data.AuthRepositoryImpl
 import bob.colbaskin.hackatontemplate.auth.data.AuthDataStoreRepositoryImpl
 import bob.colbaskin.hackatontemplate.auth.domain.local.AuthDataStoreRepository
@@ -49,5 +52,20 @@ object RepositoryModule {
         @ApplicationContext context: Context
     ): AuthDataStoreRepository {
         return AuthDataStoreRepositoryImpl(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAnalyticApiService(retrofit: Retrofit): AnalyticApiService {
+        return retrofit.create(AnalyticApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsRepository(
+        analyticApiService: AnalyticApiService,
+        @ApplicationContext context: Context
+    ): AnalyticRepository {
+        return AnalyticRepositoryImpl(analyticApiService, context)
     }
 }
