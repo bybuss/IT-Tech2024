@@ -16,7 +16,7 @@ class AnalyticRepositoryImpl @Inject constructor(
     override suspend fun fetchJsonFromApi(): String? {
         val cachedJson = fileManager.readJsonFromFile("investments.json")
         if (cachedJson != null) {
-            Log.d("AnalyticsRep", "Returning cached JSON")
+            Log.d("AnalyticsRep", "Returning cached JSON: $cachedJson")
             return cachedJson
         }
 

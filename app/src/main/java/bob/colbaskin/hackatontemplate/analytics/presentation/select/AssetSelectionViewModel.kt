@@ -2,7 +2,7 @@ package bob.colbaskin.hackatontemplate.analytics.presentation.select
 
 import androidx.lifecycle.ViewModel
 import bob.colbaskin.hackatontemplate.analytics.domain.models.AssetData
-import bob.colbaskin.hackatontemplate.analytics.domain.models.SimpleBound
+import bob.colbaskin.hackatontemplate.analytics.domain.models.SimpleBond
 import bob.colbaskin.hackatontemplate.analytics.domain.models.SimpleCurrency
 import bob.colbaskin.hackatontemplate.analytics.domain.models.SimpleGold
 import bob.colbaskin.hackatontemplate.analytics.domain.models.SimpleShare
@@ -23,8 +23,8 @@ class AssetSelectionViewModel @Inject constructor(): ViewModel() {
     private fun loadAssets() {
         _assetData.value = AssetData(
             bounds = listOf(
-                SimpleBound("Облигация 1", 500.0),
-                SimpleBound("Облигация 2", 700.0)
+                SimpleBond("Облигация 1", 500.0),
+                SimpleBond("Облигация 2", 700.0)
             ), currencies = listOf(
                 SimpleCurrency("USD", 99.3),
                 SimpleCurrency("EUR", 105.1)
