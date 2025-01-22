@@ -13,10 +13,10 @@ class AnalyticRepositoryImpl @Inject constructor(
 
     private val fileManager = FileManager(context)
 
-    override suspend fun fetchJsonFromApi(): String? {
+    override suspend fun fetchJsonFromApi(): String {
         val cachedJson = fileManager.readJsonFromFile("investments.json")
         if (cachedJson != null) {
-            Log.d("AnalyticsRep", "Returning cached JSON: $cachedJson")
+            Log.d("Analytics", "Returning JSON from file: $cachedJson")
             return cachedJson
         }
 
@@ -25,7 +25,7 @@ class AnalyticRepositoryImpl @Inject constructor(
 
         fileManager.saveJsonToFile("investments.json", json)
 
-        Log.d("AnalyticsRep", json)
+        Log.d("Analytics", "Returning JSON from api: $json")
         return json
     }
 } 

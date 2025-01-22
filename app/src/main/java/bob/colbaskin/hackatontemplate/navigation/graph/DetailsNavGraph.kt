@@ -4,8 +4,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import bob.colbaskin.hackatontemplate.analytics.presentation.select.AssetSelectionScreen
-import bob.colbaskin.hackatontemplate.analytics.presentation.statistic.AssetStatisticsScreen
+import bob.colbaskin.hackatontemplate.analytics.presentation.AssetSelectionScreen
+import bob.colbaskin.hackatontemplate.analytics.presentation.AssetStatisticsScreen
 import bob.colbaskin.hackatontemplate.home.presentation.HomeScreenDetailed
 import bob.colbaskin.hackatontemplate.navigation.DetailsScreen
 import bob.colbaskin.hackatontemplate.profile.presentation.ProfileScreenDetailed
@@ -40,11 +40,9 @@ fun NavGraphBuilder.detailsNavGraph (navController: NavHostController) {
                 onAssetSelected = { selectedAssetType ->
                     navController.navigate(DetailsScreen.AssetSelection.createRoute(selectedAssetType))
                 },
-                onStatisticClicked = { statisticAssetType ->
+                onStatisticClicked = { assetId ->
                     navController.navigate(
-                        DetailsScreen.AssetStatistics.createRoute(
-                            statisticAssetType
-                        )
+                        DetailsScreen.AssetStatistics.createRoute(assetType, assetId)
                     )
                 }
             )
@@ -52,8 +50,10 @@ fun NavGraphBuilder.detailsNavGraph (navController: NavHostController) {
 
         composable(DetailsScreen.AssetStatistics.route) { backStackEntry ->
             val assetType = backStackEntry.arguments?.getString("assetType") ?: "shares"
+            val assetId = backStackEntry.arguments?.getString("assetId") ?: "id"
             AssetStatisticsScreen(
                 assetType = assetType,
+                assetId = assetId,
                 onScaffoldBackClick = {
                     navController.navigateUp()
                 },

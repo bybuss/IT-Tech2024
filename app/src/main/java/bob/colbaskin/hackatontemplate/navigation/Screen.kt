@@ -22,16 +22,17 @@ sealed class AuthScreen(val route: String) {
 }
 
 sealed class DetailsScreen(val route: String) {
-    object Home: DetailsScreen("home_details/{strategyId}") {
+    data object Home: DetailsScreen("home_details/{strategyId}") {
         fun createRoute(strategyId: String) = "home_details/$strategyId"
     }
-    object Profile: DetailsScreen("profile_details/{StrategyId}") {
-        fun createRoute(strategyId: String) = "profile_details/{StrategyId}"
+    data object Profile: DetailsScreen("profile_details/{StrategyId}") {
+        fun createRoute(strategyId: String) = "profile_details/$strategyId"
     }
-    object AssetSelection : DetailsScreen("asset_selection/{assetType}") {
+    data object AssetSelection: DetailsScreen("asset_selection/{assetType}") {
         fun createRoute(assetType: String) = "asset_selection/$assetType"
     }
-    object AssetStatistics : DetailsScreen("asset_statistics/{assetType}") {
-        fun createRoute(assetType: String) = "asset_statistics/$assetType"
+    data object AssetStatistics: DetailsScreen("asset_statistics/{assetType}/{assetId}") {
+        fun createRoute(assetType: String, assetId: String) =
+            "asset_statistics/$assetType/$assetId"
     }
 }

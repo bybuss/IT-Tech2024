@@ -1,4 +1,4 @@
-package bob.colbaskin.hackatontemplate.analytics.presentation.select
+package bob.colbaskin.hackatontemplate.analytics.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -24,35 +24,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import bob.colbaskin.hackatontemplate.analytics.domain.models.FullGold
 
 @Composable
 fun AssetSelectionScreen(
     assetType: String,
     onStatisticClicked: (String) -> Unit,
     onAssetSelected: (String) -> Unit,
-    viewModel: AssetSelectionViewModel = hiltViewModel()
+    viewModel: AnalyticsViewModel = hiltViewModel()
 ) {
-    val assetData by viewModel.assetData.collectAsState()
+    val assetsUiState by viewModel.assetsForToday.collectAsState()
 
-    val assets = when (assetType) {
-        "bounds" -> assetData?.bounds?.map { it.name } ?: emptyList()
-        "currencies" -> assetData?.currencies?.map { it.name } ?: emptyList()
-        "gold" -> assetData?.gold?.map { it.date } ?: emptyList()
-        "shares" -> assetData?.shares?.map { it.name } ?: emptyList()
+    val assets: List<Asset> = when (assetType) {
+        "bonds" -> assetsUiState.bonds
+        "currencies" -> assetsUiState.currencies
+        "gold" -> assetsUiState.golds
+        "shares" -> assetsUiState.shares
         else -> emptyList()
     }
 
     val previousScreen = when (assetType) {
-        "bounds" -> "currencies"
+        "bonds" -> "currencies"
         "currencies" -> "gold"
         "gold" -> "shares"
-        "shares" -> "bounds"
+        "shares" -> "bonds"
         else -> null
     }
 
     val nextScreen = when (assetType) {
-        "bounds" -> "shares"
-        "currencies" -> "bounds"
+        "bonds" -> "shares"
+        "currencies" -> "bonds"
         "gold" -> "currencies"
         "shares" -> "gold"
         else -> null
@@ -71,10 +72,12 @@ fun AssetSelectionScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            items(assets) { assetName ->
+            items(assets) { asset ->
                 AssetItem(
-                    name = assetName,
-                    onClick = { onStatisticClicked(assetType) }
+                    asset = asset,
+                    onClick = { assetId ->
+                        onStatisticClicked(assetId)
+                    }
                 )
             }
         }
@@ -107,7 +110,7 @@ fun AssetSelectionHeader(
                 "shares" -> "Акции"
                 "gold" -> "Золото"
                 "currencies" -> "Валюта"
-                "bounds" -> "Облигации"
+                "bonds" -> "Облигации"
                 else -> "Неизвестный экран"
             },
             style = MaterialTheme.typography.titleLarge,
@@ -125,18 +128,33 @@ fun AssetSelectionHeader(
 }
 
 @Composable
-fun AssetItem(name: String, onClick: () -> Unit) {
+fun AssetItem(asset: Asset,  onClick: (String) -> Unit) {
+
+    val assetId = when(asset) {
+        is Asset.Bond -> asset.bond.name
+        is Asset.Currency -> asset.currency.name
+        is Asset.Gold -> asset.gold.date
+        is Asset.Share -> asset.share.name
+    }
+
+    val assetDate = when(asset) {
+        is Asset.Bond -> asset.bond.date
+        is Asset.Currency -> asset.currency.date
+        is Asset.Gold -> asset.gold.date
+        is Asset.Share -> asset.share.date
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
     ) {
         Text(
-            text = name,
+            text = assetId,
             modifier = Modifier.weight(1f),
             style = MaterialTheme.typography.bodyLarge
         )
-        Button(onClick = onClick) {
+        Button(onClick = { onClick(assetId) }) {
             Text("Подробнее")
         }
     }
@@ -145,14 +163,24 @@ fun AssetItem(name: String, onClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun AssetItemPreview() {
-    AssetItem(name = "Test", onClick = {})
+    AssetItem(
+        asset = Asset.Gold(
+            gold = FullGold(
+                date = "2024-01-01",
+                price = 1850.50,
+                last7DayDiff = "2%",
+                next7DayDiff = "-1%"
+            )
+        ),
+        onClick = {}
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun AssetSelectionHeaderPreview() {
     AssetSelectionHeader(
-        assetType = "bounds",
+        assetType = "bonds",
         onPrevious = {},
         onNext = {},
     )
@@ -162,7 +190,7 @@ fun AssetSelectionHeaderPreview() {
 @Composable
 fun AssetSelectionScreenPreview() {
     AssetSelectionScreen(
-        assetType = "bounds",
+        assetType = "bonds",
         onStatisticClicked = {},
         onAssetSelected = {}
     )
