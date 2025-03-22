@@ -31,6 +31,7 @@
   <img src="screenshots/light/strategy-light.png" alt="Экран создания стратегии - Светлая тема" width="125" />
   <img src="screenshots/light/bonds-light.png" alt="Выбор облигаций - Светлая тема" width="125" />
   <img src="screenshots/light/chart-light.png" alt="График - Светлая тема" width="125" />
+  <img src="screenshots/light/profile-light.png" alt="Профиль - Светлая тема" width="125" />
 </p>
 
 ### Темная тема
@@ -40,6 +41,7 @@
   <img src="screenshots/dark/strategy-dark.png" alt="Экран создания стратегии - Темная тема" width="125" />
   <img src="screenshots/dark/bonds-dark.png" alt="Выбор облигаций - Темная тема" width="125" />
   <img src="screenshots/dark/chart-dark.png" alt="График - Темная тема" width="125" />
+  <img src="screenshots/dark/profile-dark.png" alt="Профиль - Темная тема" width="125" />
 </p>
 
 ## Цели и задачи приложения
